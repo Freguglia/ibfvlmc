@@ -6,20 +6,22 @@
 using namespace Rcpp;
 
 // ibf
-void ibf(IntegerVector renewal, unsigned int Hmax, unsigned int alphlen);
-RcppExport SEXP _ibfvlmc_ibf(SEXP renewalSEXP, SEXP HmaxSEXP, SEXP alphlenSEXP) {
+void ibf(IntegerVector z, IntegerVector renewal, unsigned int Hmax, unsigned int alphlen, unsigned int burnin);
+RcppExport SEXP _ibfvlmc_ibf(SEXP zSEXP, SEXP renewalSEXP, SEXP HmaxSEXP, SEXP alphlenSEXP, SEXP burninSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type z(zSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type renewal(renewalSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type Hmax(HmaxSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type alphlen(alphlenSEXP);
-    ibf(renewal, Hmax, alphlen);
+    Rcpp::traits::input_parameter< unsigned int >::type burnin(burninSEXP);
+    ibf(z, renewal, Hmax, alphlen, burnin);
     return R_NilValue;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ibfvlmc_ibf", (DL_FUNC) &_ibfvlmc_ibf, 3},
+    {"_ibfvlmc_ibf", (DL_FUNC) &_ibfvlmc_ibf, 5},
     {NULL, NULL, 0}
 };
 

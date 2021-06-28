@@ -41,7 +41,9 @@ void vlmcTree::addData(IntegerVector z, bool reset = true){
   for(unsigned int t=H; t<n; t++){
     node = root;
     node->cnts[z[t]]++;
-    for(unsigned int d=1; d<H+1; d++){
+    unsigned int d = 0;
+    while(node->children.size() > 0){
+      d++;
       node = node->children[z[t-d]];
       node->cnts[z[t]]++;
     }
