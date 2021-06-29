@@ -111,33 +111,14 @@ vector<vlmcNode*> vlmcNode::getSiblings(){
   }
 }
 
-vector<double> vlmcNode::getProbs(){
-  unsigned int m = this->cnts.size();
-  vector<double> probs(m);
-  
-  double n_tot = 0.0;
-  for(double n : this->cnts){n_tot += n;}
-  for(unsigned int i = 0; i<m; i++){
-    probs[i] = this->cnts[i]/n_tot;
-  }
-  
-  return(probs);
-}
-
-unsigned int vlmcNode::getN(){
+unsigned int vlmcNode::getN_train(){
   unsigned int n_tot = 0;
-  for(unsigned int n : this->cnts){n_tot += n;}
+  for(unsigned int n : this->cnts_train){n_tot += n;}
   return(n_tot);
 }
 
-void vlmcNode::computeLrtStat(){
-  if(this->children.size()>0){
-    double child_ll = 0;
-    for(vlmcNode* node : this->children){
-      child_ll += node->llcache;
-    }
-    this->lrtStat = child_ll - this->llcache;
-  } else {
-    this->lrtStat = -1;
-  }
+unsigned int vlmcNode::getN_test(){
+  unsigned int n_tot = 0;
+  for(unsigned int n : this->cnts_train){n_tot += n;}
+  return(n_tot);
 }

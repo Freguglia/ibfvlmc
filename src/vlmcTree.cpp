@@ -13,7 +13,8 @@ vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewa
   root->growPerfect(alphlen, Hmax, renewal);
   H = Hmax;
   m = alphlen;
-  n = 0;
+  n_train = 0;
+  n_test = 0;
   vector<vlmcNode*> nodes = root->getLeaves();
   for(unsigned int i = 0; i<nodes.size(); i++){
     nodes[i]->vlmcLeaf = true;
@@ -24,7 +25,7 @@ vlmcTree::~vlmcTree(){
   delete root;
 }
 
-void vlmcTree::addData(IntegerVector z, bool reset = true){
+void vlmcTree::addData_train(IntegerVector z, bool reset = true){
   unsigned int H = this->H;
   unsigned int m = this->m;
   unsigned int n = z.size();
@@ -33,45 +34,69 @@ void vlmcTree::addData(IntegerVector z, bool reset = true){
   if(reset){
     for(unsigned int i = 0; i<nodes.size(); i++){
       for(unsigned int j = 0; j<m; j++){
-        nodes[i]->cnts.push_back(0);
+        nodes[i]->cnts_train.push_back(0);
       }
     }   
   }
   vlmcNode* node;
   for(unsigned int t=H; t<n; t++){
     node = root;
-    node->cnts[z[t]]++;
+    node->cnts_train[z[t]]++;
     unsigned int d = 0;
     while(node->children.size() > 0){
       d++;
       node = node->children[z[t-d]];
-      node->cnts[z[t]]++;
+      node->cnts_train[z[t]]++;
     }
   }
-  this->n += (n - H);
+  this->n_train += (n - H);
 }
 
-void vlmcTree::cacheLikelihood(){
+void vlmcTree::addData_test(IntegerVector z, bool reset = true){
+  unsigned int H = this->H;
+  unsigned int m = this->m;
+  unsigned int n = z.size();
+  vector<vlmcNode*> nodes = this->root->getNodes();
+  vlmcNode* root = this->root;
+  if(reset){
+    for(unsigned int i = 0; i<nodes.size(); i++){
+      for(unsigned int j = 0; j<m; j++){
+        nodes[i]->cnts_test.push_back(0);
+      }
+    }   
+  }
+  vlmcNode* node;
+  for(unsigned int t=H; t<n; t++){
+    node = root;
+    node->cnts_train[z[t]]++;
+    unsigned int d = 0;
+    while(node->children.size() > 0){
+      d++;
+      node = node->children[z[t-d]];
+      node->cnts_test[z[t]]++;
+    }
+  }
+  this->n_test += (n - H);
+}
+
+void vlmcTree::cacheQ_train(double alpha){
   vector<vlmcNode*> nodes = this->root->getNodes();
   unsigned int m = this->m;
-  double ll;
+  double logq;
   unsigned int n_tot;
-  double p;
   vector<double> ns(m);
   for(unsigned int i=0; i<nodes.size(); i++){
-    ll = 0;
+    logq = 0;
     n_tot = 0;
     for (unsigned int j=0; j<m; j++){
-      ns[j] = (double)nodes[i]->cnts[j];
+      ns[j] = (double)nodes[i]->cnts_train[j];
       n_tot += ns[j];
     }
     for (unsigned int j=0; j<m; j++){
-      double p = ns[j]/n_tot;
-      if(p > 0 && p < 1){
-        ll += ns[j]*log(p);
-      }
+      logq += lgamma(ns[j] + alpha);
     }
-    nodes[i]->llcache = ll;
+    logq = logq - lgamma(n_tot + m*alpha);
+    nodes[i]->node_logq_train = logq;
   }
 }
 

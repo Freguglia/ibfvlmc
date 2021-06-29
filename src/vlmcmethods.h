@@ -20,10 +20,10 @@ public:
   vlmcNode(int lbl);
   ~vlmcNode();
   unsigned int label;
-  vector<unsigned int> cnts;
-  double llcache;
-  double lrtStat;
-  void computeLrtStat();
+  vector<unsigned int> cnts_train;
+  vector<unsigned int> cnts_test;
+  double node_logq_train;
+  double node_logq_test;
   vector<vlmcNode*> children;
   vlmcNode* parent = NULL;
   vector<vlmcNode*> getNodes();
@@ -34,8 +34,8 @@ public:
   bool tested = false;
   void growPerfect(unsigned int m, unsigned int H, IntegerVector renewal);
   string getPath();
-  vector<double> getProbs();
-  unsigned int getN();
+  unsigned int getN_train();
+  unsigned int getN_test();
 private:
   bool isLeaf();
   void growChildren(unsigned int m, IntegerVector renewal);
@@ -45,10 +45,12 @@ class vlmcTree{
 public:
   vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal);
   ~vlmcTree();
-  void addData(IntegerVector z, bool reset);
-  void cacheLikelihood();
+  void addData_train(IntegerVector z, bool reset);
+  void addData_test(IntegerVector z, bool reset);
+  void cacheQ_train(double alpha);
   string concatLeaves();
-  unsigned int n;
+  unsigned int n_train;
+  unsigned int n_test;
   void clear();
   void pruneLeaf(vlmcNode* leaf);
   vector<vlmcNode*> getVlmcLeaves();

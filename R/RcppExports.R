@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
-ibf <- function(z, renewal, Hmax = 5L, alphlen = 2L, burnin = 10000L) {
-    invisible(.Call('_ibfvlmc_ibf', PACKAGE = 'ibfvlmc', z, renewal, Hmax, alphlen, burnin))
+ibf <- function(z_test, z_train, renewal, Hmax = 5L, alphlen = 2L, burnin = 10000L) {
+    invisible(.Call('_ibfvlmc_ibf', PACKAGE = 'ibfvlmc', z_test, z_train, renewal, Hmax, alphlen, burnin))
 }
 
