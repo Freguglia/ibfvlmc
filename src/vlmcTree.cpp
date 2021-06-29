@@ -15,10 +15,7 @@ vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewa
   m = alphlen;
   n_train = 0;
   n_test = 0;
-  vector<vlmcNode*> leaves = root->getLeaves();
-  for(unsigned int i = 0; i<leaves.size(); i++){
-    leaves[i]->vlmcLeaf = true;
-  }
+  root->vlmcLeaf = true;
 }
 
 vlmcTree::~vlmcTree(){

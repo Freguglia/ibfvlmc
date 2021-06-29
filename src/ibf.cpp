@@ -2,8 +2,8 @@
 
 //' @export
 // [[Rcpp::export]]
-List ibf(IntegerVector z_test,
-         List z_train,
+List ibf(List z_test,
+         IntegerVector z_train,
          IntegerVector renewal,
          double alpha = 1/2,
          double logprior_penalty = 2,
@@ -19,13 +19,13 @@ List ibf(IntegerVector z_test,
   // Training: Metropolis-Hastings
   
   // Add data
-  for(unsigned int i = 0; i<z_train.size(); i++){
-    IntegerVector z = as<IntegerVector>(z_train[i]);
+  for(unsigned int i = 0; i<z_test.size(); i++){
+    IntegerVector z = as<IntegerVector>(z_test[i]);
     bool is_first = i==0;
-    tau->addData_train(z, is_first);
+    tau->addData_test(z, is_first);
   }
   
-  tau->addData_test(z_test, true);
+  tau->addData_train(z_train, true);
   
   tau->cacheQ_train(alpha);
   tau->cacheQ_test(alpha);
