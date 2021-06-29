@@ -24,6 +24,7 @@ public:
   vector<unsigned int> cnts_test;
   double node_logq_train;
   double node_logq_test;
+  double node_logq_diff;
   vector<vlmcNode*> children;
   vlmcNode* parent = NULL;
   vector<vlmcNode*> getNodes();
@@ -54,9 +55,10 @@ public:
   unsigned int n_test;
   void clear();
   void pruneLeaf(vlmcNode* leaf);
+  void growLeaf(vlmcNode* leaf);
   vector<vlmcNode*> getVlmcLeaves();
-  vector<vlmcNode*> getUncheckedLeaves();
   vector<vlmcNode*> getPrunnableLeaves();
+  vector<vlmcNode*> getGrowableLeaves();
   unsigned int H;
   unsigned int m;
   vlmcNode* root;

@@ -15,9 +15,9 @@ vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewa
   m = alphlen;
   n_train = 0;
   n_test = 0;
-  vector<vlmcNode*> nodes = root->getLeaves();
-  for(unsigned int i = 0; i<nodes.size(); i++){
-    nodes[i]->vlmcLeaf = true;
+  vector<vlmcNode*> leaves = root->getLeaves();
+  for(unsigned int i = 0; i<leaves.size(); i++){
+    leaves[i]->vlmcLeaf = true;
   }
 }
 
@@ -83,10 +83,11 @@ void vlmcTree::cacheQ_train(double alpha){
   vector<vlmcNode*> nodes = this->root->getNodes();
   unsigned int m = this->m;
   double logq;
+  double logq_children;
   unsigned int n_tot;
   vector<double> ns(m);
   for(unsigned int i=0; i<nodes.size(); i++){
-    logq = 0;
+    logq = lgamma(m*alpha) - m*lgamma(alpha);
     n_tot = 0;
     for (unsigned int j=0; j<m; j++){
       ns[j] = (double)nodes[i]->cnts_train[j];
@@ -98,6 +99,17 @@ void vlmcTree::cacheQ_train(double alpha){
     logq = logq - lgamma(n_tot + m*alpha);
     nodes[i]->node_logq_train = logq;
   }
+  for(unsigned int i=0; i<nodes.size(); i++){
+    logq_children = 0.0;
+    if(nodes[i]->children.size() > 0){
+      for(unsigned int j=0; j<m; j++){
+        logq_children += nodes[i]->children[j]->node_logq_train;
+      }
+    nodes[i]->node_logq_diff = nodes[i]->node_logq_train - logq_children;
+    } else {
+      nodes[i]->node_logq_diff = R_NaN;
+    }
+  }
 }
 
 void vlmcTree::cacheQ_test(double alpha){
@@ -107,7 +119,7 @@ void vlmcTree::cacheQ_test(double alpha){
   unsigned int n_tot;
   vector<double> ns(m);
   for(unsigned int i=0; i<nodes.size(); i++){
-    logq = 0;
+    logq = lgamma(m*alpha) - m*lgamma(alpha);
     n_tot = 0;
     for (unsigned int j=0; j<m; j++){
       ns[j] = (double)nodes[i]->cnts_test[j];
@@ -132,6 +144,17 @@ vector<vlmcNode*> vlmcTree::getVlmcLeaves(){
   return(tau);
 }
 
+vector<vlmcNode*> vlmcTree::getGrowableLeaves(){
+  vector<vlmcNode*> currentLeaves = this->getVlmcLeaves();
+  vector<vlmcNode*> res;
+  for(long unsigned int i=0; i<currentLeaves.size(); i++){
+    if(currentLeaves[i]->children.size() > 0){
+      res.push_back(currentLeaves[i]);
+    }
+  }
+  return(res);
+}
+
 vector<vlmcNode*> vlmcTree::getPrunnableLeaves(){
   vector<vlmcNode*> currentLeaves = this->getVlmcLeaves();
   vector<vlmcNode*> res;
@@ -149,15 +172,15 @@ vector<vlmcNode*> vlmcTree::getPrunnableLeaves(){
   return(res);
 }
 
-vector<vlmcNode*> vlmcTree::getUncheckedLeaves(){
-  vector<vlmcNode*> allLeaves = this->getPrunnableLeaves();
-  vector<vlmcNode*> tau;
-  for(unsigned int i=0; i<allLeaves.size(); i++){
-    if(!allLeaves[i]->tested){
-      tau.push_back(allLeaves[i]);
-    }
+void vlmcTree::growLeaf(vlmcNode* leaf){
+  if(!leaf->vlmcLeaf){
+    throw invalid_argument("Error: Attempting to grow a non-leaf.");
   }
-  return(tau);
+  leaf->vlmcLeaf = false;
+  vector<vlmcNode*> chi = leaf->children; 
+  for(long unsigned int i=0; i<chi.size(); i++){
+    chi[i]->vlmcLeaf = true;
+  }
 }
 
 void vlmcTree::pruneLeaf(vlmcNode* leaf){
