@@ -4,7 +4,8 @@
 // [[Rcpp::export]]
 void ibf(IntegerVector z_test,
          List z_train,
-         IntegerVector renewal, 
+         IntegerVector renewal,
+         double alpha = 1/2,
          unsigned int Hmax = 5,
          unsigned int alphlen = 2,
          unsigned int burnin = 10000){
@@ -20,11 +21,16 @@ void ibf(IntegerVector z_test,
     tau->addData_train(z, is_first);
   }
   
+  tau->addData_test(z_test, true);
+  
+  tau->cacheQ_train(alpha);
+  tau->cacheQ_test(alpha);
+  
   vector<vlmcNode*> nodes = tau->root->getNodes();
   for(int i=0; i<nodes.size(); i++){
     Rcout << nodes[i]->getPath() << "\n";
-    Rcout << nodes[i]->cnts_train[0] << " " <<
-      nodes[i]->cnts_train[1] << "\n";
+    Rcout << nodes[i]->node_logq_train << "\n";
+    Rcout << nodes[i]->node_logq_test << "\n";
   }
   
   delete tau;

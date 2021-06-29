@@ -68,7 +68,7 @@ void vlmcTree::addData_test(IntegerVector z, bool reset = true){
   vlmcNode* node;
   for(unsigned int t=H; t<n; t++){
     node = root;
-    node->cnts_train[z[t]]++;
+    node->cnts_test[z[t]]++;
     unsigned int d = 0;
     while(node->children.size() > 0){
       d++;
@@ -97,6 +97,27 @@ void vlmcTree::cacheQ_train(double alpha){
     }
     logq = logq - lgamma(n_tot + m*alpha);
     nodes[i]->node_logq_train = logq;
+  }
+}
+
+void vlmcTree::cacheQ_test(double alpha){
+  vector<vlmcNode*> nodes = this->root->getNodes();
+  unsigned int m = this->m;
+  double logq;
+  unsigned int n_tot;
+  vector<double> ns(m);
+  for(unsigned int i=0; i<nodes.size(); i++){
+    logq = 0;
+    n_tot = 0;
+    for (unsigned int j=0; j<m; j++){
+      ns[j] = (double)nodes[i]->cnts_test[j];
+      n_tot += ns[j];
+    }
+    for (unsigned int j=0; j<m; j++){
+      logq += lgamma(ns[j] + alpha);
+    }
+    logq = logq - lgamma(n_tot + m*alpha);
+    nodes[i]->node_logq_test = logq;
   }
 }
 

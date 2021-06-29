@@ -48,6 +48,7 @@ public:
   void addData_train(IntegerVector z, bool reset);
   void addData_test(IntegerVector z, bool reset);
   void cacheQ_train(double alpha);
+  void cacheQ_test(double alpha);
   string concatLeaves();
   unsigned int n_train;
   unsigned int n_test;
