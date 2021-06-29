@@ -30,8 +30,6 @@ partial_bf <- function(ztest, ztrain,
                     logpenalty0, renewal = renewal0)$EQ
   Q1 <- expected_Q(ztest, ztrain, nsamples, burnin, Hmax, alpha1,
                     logpenalty1, renewal = renewal1)$EQ
-  print(Q0)
-  print(Q1)
   return(as.numeric(Q0/Q1))
 }
 
