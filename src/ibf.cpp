@@ -114,7 +114,7 @@ List ibf(IntegerVector z_test,
     Rcpp::Named("posterior") = 
       Rcpp::List::create(Rcpp::Named("tree") = key_posterior, Rcpp::Named("count") = value_posterior),
     Rcpp::Named("logQ") = 
-      Rcpp::List::create(Rcpp::Named("tree") = key_logQ, Rcpp::Named("count") = value_logQ)
+      Rcpp::List::create(Rcpp::Named("tree") = key_logQ, Rcpp::Named("logq") = value_logQ)
   );
 }
 
