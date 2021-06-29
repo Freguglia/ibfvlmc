@@ -2,7 +2,7 @@
 
 //' @export
 // [[Rcpp::export]]
-void ibf(IntegerVector z_test,
+List ibf(IntegerVector z_test,
          List z_train,
          IntegerVector renewal,
          double alpha = 1/2,
@@ -39,6 +39,9 @@ void ibf(IntegerVector z_test,
   vlmcNode* nodeToPrune;
   unsigned int n_prunnable;
   double u, logratio;
+  
+  std::unordered_map<string, int> posterior;
+  std::unordered_map<string, double> logQ;
   
   GetRNGstate();
   for(unsigned int t=0; t<all_samples; t++){
@@ -77,14 +80,42 @@ void ibf(IntegerVector z_test,
         }
       }
     }
+    if(t > burnin){
+      string this_tree = tau->concatLeaves();
+      auto search = logQ.find(this_tree);
+      if(search == logQ.end()){
+        double logq_test = 0.0;
+        for(const auto node : tau->getVlmcLeaves()){
+          logq_test += node->node_logq_test;
+        }
+        logQ[this_tree] = logq_test;
+      }
+      posterior[this_tree]++;
+    }
   }
   PutRNGstate();
   
-  Rcout << tau->concatLeaves() << "\n";
-  
-  //Rcout << tau->g;
+  vector<string> key_posterior;
+  vector<int> value_posterior;
+  for(std::unordered_map<string,int>::iterator it = posterior.begin(); it != posterior.end(); ++it) {
+    key_posterior.push_back(it->first);
+    value_posterior.push_back(it->second);
+  }
+  vector<string> key_logQ;
+  vector<double> value_logQ;
+  for(std::unordered_map<string,double>::iterator it = logQ.begin(); it != logQ.end(); ++it) {
+    key_logQ.push_back(it->first);
+    value_logQ.push_back(it->second);
+  }
   
   delete tau;
+  
+  return Rcpp::List::create(
+    Rcpp::Named("posterior") = 
+      Rcpp::List::create(Rcpp::Named("tree") = key_posterior, Rcpp::Named("count") = value_posterior),
+    Rcpp::Named("logQ") = 
+      Rcpp::List::create(Rcpp::Named("tree") = key_logQ, Rcpp::Named("count") = value_logQ)
+  );
 }
 
 // ibf(binchain[[1]], binchain[2], renewal = 0)

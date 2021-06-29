@@ -6,9 +6,10 @@
 using namespace Rcpp;
 
 // ibf
-void ibf(IntegerVector z_test, List z_train, IntegerVector renewal, double alpha, double logprior_penalty, unsigned int Hmax, unsigned int alphlen, unsigned int burnin, unsigned int nsamples);
+List ibf(IntegerVector z_test, List z_train, IntegerVector renewal, double alpha, double logprior_penalty, unsigned int Hmax, unsigned int alphlen, unsigned int burnin, unsigned int nsamples);
 RcppExport SEXP _ibfvlmc_ibf(SEXP z_testSEXP, SEXP z_trainSEXP, SEXP renewalSEXP, SEXP alphaSEXP, SEXP logprior_penaltySEXP, SEXP HmaxSEXP, SEXP alphlenSEXP, SEXP burninSEXP, SEXP nsamplesSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< IntegerVector >::type z_test(z_testSEXP);
     Rcpp::traits::input_parameter< List >::type z_train(z_trainSEXP);
@@ -19,8 +20,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int >::type alphlen(alphlenSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type burnin(burninSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type nsamples(nsamplesSEXP);
-    ibf(z_test, z_train, renewal, alpha, logprior_penalty, Hmax, alphlen, burnin, nsamples);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(ibf(z_test, z_train, renewal, alpha, logprior_penalty, Hmax, alphlen, burnin, nsamples));
+    return rcpp_result_gen;
 END_RCPP
 }
 
