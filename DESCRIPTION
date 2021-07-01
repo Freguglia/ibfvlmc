@@ -14,7 +14,8 @@ Imports:
   dplyr,
   Brobdingnag,
   furrr
-LinkingTo: Rcpp
+LinkingTo: Rcpp,
+           RcppArmadillo
 RoxygenNote: 7.1.1
 Encoding: UTF-8
 Depends: 

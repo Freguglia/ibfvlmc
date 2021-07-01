@@ -1,6 +1,5 @@
 #include "vlmcmethods.h"
 
-//' @export
 // [[Rcpp::export]]
 List ibf(List z_test,
          IntegerVector z_train,
