@@ -13,7 +13,8 @@ Imports:
   magrittr,
   dplyr,
   Brobdingnag,
-  furrr
+  furrr,
+  purrr
 LinkingTo: Rcpp,
            RcppArmadillo
 RoxygenNote: 7.1.1

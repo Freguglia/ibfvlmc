@@ -27,10 +27,12 @@ partial_bf <- function(ztest, ztrain,
                           logpenalty0 = 2, logpenalty1 = 2,
                           renewal0 = 0, renewal1 = numeric()){
   Q0 <- expected_Q(ztest, ztrain, nsamples, burnin, Hmax, alpha0,
-                    logpenalty0, renewal = renewal0)$EQ
+                    logpenalty0, renewal = renewal0)
   Q1 <- expected_Q(ztest, ztrain, nsamples, burnin, Hmax, alpha1,
-                    logpenalty1, renewal = renewal1)$EQ
-  return(as.numeric(Q0/Q1))
+                    logpenalty1, renewal = renewal1)
+  return(list(pbf = as.numeric(Q0$EQ/Q1$EQ),
+         Q0 = Q0,
+         Q1 = Q1))
 }
 
 # partial_bf(binchain[-1], binchain[[1]], Hmax = 5)
