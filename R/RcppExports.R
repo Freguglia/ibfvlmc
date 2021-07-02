@@ -5,6 +5,10 @@ ibf <- function(z_test, z_train, renewal, alpha = 1/2, logprior_penalty = 2, Hma
     .Call('_ibfvlmc_ibf', PACKAGE = 'ibfvlmc', z_test, z_train, renewal, alpha, logprior_penalty, Hmax, alphlen, burnin, nsamples)
 }
 
+ibf_comp <- function(z_test, z_train, renewal, alpha = 1/2, logprior_penalty = 2, Hmax = 5L, alphlen = 2L, burnin = 10000L, nsamples = 100000L) {
+    .Call('_ibfvlmc_ibf_comp', PACKAGE = 'ibfvlmc', z_test, z_train, renewal, alpha, logprior_penalty, Hmax, alphlen, burnin, nsamples)
+}
+
 #' @export
 rvlmc_cpp <- function(n, context_list, probs) {
     .Call('_ibfvlmc_rvlmc_cpp', PACKAGE = 'ibfvlmc', n, context_list, probs)

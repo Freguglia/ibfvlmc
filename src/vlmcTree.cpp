@@ -152,7 +152,7 @@ vector<vlmcNode*> vlmcTree::getGrowableLeaves(){
   return(res);
 }
 
-vector<vlmcNode*> vlmcTree::getPrunnableLeaves(){
+vector<vlmcNode*> vlmcTree::getPrunnableLeaves(bool is_c, IntegerVector renewal){
   vector<vlmcNode*> currentLeaves = this->getVlmcLeaves();
   vector<vlmcNode*> res;
   vector<vlmcNode*> sibs;
@@ -204,4 +204,15 @@ string vlmcTree::concatLeaves(){
   for(const auto &piece : paths) s += piece + ',';
   s.pop_back();
   return s + '}';
+}
+
+void vlmcTree::assignLimits(IntegerVector renewal){
+  vector<vlmcNode*> limitNodes = this->root->children;
+  IntegerVector renewal_c = seq_len(m) - 1;
+  while(limitNodes.size() > 0){
+    limitNodes[0]->renewal_limit = true;
+    for(int j=0; j<this->m; j++){
+      if(true) limitNodes.pop_back();
+    }
+  }
 }

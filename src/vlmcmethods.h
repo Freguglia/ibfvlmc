@@ -40,6 +40,7 @@ public:
   unsigned int getN_train();
   unsigned int getN_test();
   void growChildren(unsigned int m, IntegerVector renewal);
+  bool renewal_limit = false;
 private:
   bool isLeaf();
   
@@ -60,11 +61,12 @@ public:
   void pruneLeaf(vlmcNode* leaf);
   void growLeaf(vlmcNode* leaf);
   vector<vlmcNode*> getVlmcLeaves();
-  vector<vlmcNode*> getPrunnableLeaves();
+  vector<vlmcNode*> getPrunnableLeaves(bool is_c, IntegerVector renewal);
   vector<vlmcNode*> getGrowableLeaves();
   unsigned int H;
   unsigned int m;
   vlmcNode* root;
+  void assignLimits(IntegerVector renewal);
 };
 
 #endif
