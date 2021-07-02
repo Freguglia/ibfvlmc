@@ -1,19 +1,29 @@
 #include "vlmcmethods.h"
 
 // [[Rcpp::export]]
-List ibf(List z_test,
-         IntegerVector z_train,
-         IntegerVector renewal,
-         double alpha = 1/2,
-         double logprior_penalty = 2,
-         unsigned int Hmax = 5,
-         unsigned int alphlen = 2,
-         unsigned int burnin = 10000,
-         unsigned int nsamples = 100000){
+List ibf_comp(List z_test,
+              IntegerVector z_train,
+              IntegerVector renewal,
+              double alpha = 1/2,
+              double logprior_penalty = 2,
+              unsigned int Hmax = 5,
+              unsigned int alphlen = 2,
+              unsigned int burnin = 10000,
+              unsigned int nsamples = 100000){
+
   unsigned int all_samples = burnin + nsamples;
   int m = alphlen;
   // Allocate maximal tree
-  vlmcTree* tau = new vlmcTree(alphlen, Hmax, renewal);
+  IntegerVector empty(0);
+  vlmcTree* tau = new vlmcTree(alphlen, Hmax, empty);
+  tau->assignLimits(renewal);
+  
+  vector<vlmcNode*> allNodes = tau->root->getNodes();
+  for(const auto &node : allNodes){
+    if(node->renewal_limit){
+      Rcout << node->getPath() << "\n";
+    }
+  }
   
   // Training: Metropolis-Hastings
   
@@ -53,7 +63,7 @@ List ibf(List z_test,
         int toGrow = floor(runif(1,0,n_growable)[0]);
         vlmcNode* nodeToGrow = growableLeaves[toGrow];
         tau->growLeaf(nodeToGrow);
-        n_prunnable = tau->getPrunnableLeaves(false, renewal).size();
+        n_prunnable = tau->getPrunnableLeaves(true, renewal).size();
         logratio = -nodeToGrow->node_logq_diff + 
           log(n_prunnable) - log(m) - log(n_growable) -
           logprior_penalty;
@@ -116,3 +126,5 @@ List ibf(List z_test,
       Rcpp::List::create(Rcpp::Named("tree") = key_logQ, Rcpp::Named("logq") = value_logQ)
   );
 }
+
+// library(ibfvlmc);ibfvlmc:::ibf_comp(binchain[-1], binchain[[1]], renewal = 0) -> a

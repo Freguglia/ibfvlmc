@@ -208,11 +208,31 @@ string vlmcTree::concatLeaves(){
 
 void vlmcTree::assignLimits(IntegerVector renewal){
   vector<vlmcNode*> limitNodes = this->root->children;
-  IntegerVector renewal_c = seq_len(m) - 1;
+  vector<vlmcNode*> nodeToAdd;
+  vlmcNode* thisNode;
+  unsigned int m = this->m;
+  unsigned int n_renewal = renewal.size();
+  bool is_renewal;
+  
   while(limitNodes.size() > 0){
-    limitNodes[0]->renewal_limit = true;
-    for(int j=0; j<this->m; j++){
-      if(true) limitNodes.pop_back();
+    thisNode = limitNodes.back();
+    limitNodes.pop_back();
+    thisNode->renewal_limit = true;
+    is_renewal = false;
+    
+    for(unsigned int k=0; k<n_renewal; k++){
+      if(thisNode->label == renewal[k]){
+        is_renewal = true;
+      }
     }
+    if(!is_renewal && thisNode->children.size()>0){
+      for(unsigned int j=0;j<m;j++){
+        nodeToAdd.push_back(thisNode->children[j]);
+      }
+    }
+    for(unsigned int l=0; l<nodeToAdd.size(); l++){
+      limitNodes.push_back(nodeToAdd[l]);
+    }
+    nodeToAdd.clear();
   }
 }
