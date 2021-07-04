@@ -152,10 +152,11 @@ vector<vlmcNode*> vlmcTree::getGrowableLeaves(){
   return(res);
 }
 
-vector<vlmcNode*> vlmcTree::getPrunnableLeaves(bool is_c, IntegerVector renewal){
+vector<vlmcNode*> vlmcTree::getPrunnableLeaves(bool is_c){
   vector<vlmcNode*> currentLeaves = this->getVlmcLeaves();
   vector<vlmcNode*> res;
   vector<vlmcNode*> sibs;
+  LogicalVector thisIsLimit;
   int m = this->m;
   int sibCount;
   for(long unsigned int i=0; i<currentLeaves.size(); i++){
@@ -164,8 +165,21 @@ vector<vlmcNode*> vlmcTree::getPrunnableLeaves(bool is_c, IntegerVector renewal)
     for(long unsigned int j = 0; j<sibs.size(); j++){
       if(sibs[j]->vlmcLeaf) sibCount++;
     }
-    if(sibCount == m) res.push_back(currentLeaves[i]);
+    if(sibCount == m) {
+      res.push_back(currentLeaves[i]);
+      thisIsLimit.push_back(!currentLeaves[i]->renewal_limit &&
+        currentLeaves[i]->parent->renewal_limit);
+    }
   }
+  if(is_c && sum(thisIsLimit) == m) {
+    vector<vlmcNode*> out;
+    for(int i=0; i<res.size(); i++){
+      if(!thisIsLimit[i]){
+        out.push_back(res[i]);
+      }
+    }
+    return(out);
+  };
   return(res);
 }
 

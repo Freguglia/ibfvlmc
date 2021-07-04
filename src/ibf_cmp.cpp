@@ -17,13 +17,16 @@ List ibf_comp(List z_test,
   IntegerVector empty(0);
   vlmcTree* tau = new vlmcTree(alphlen, Hmax, empty);
   tau->assignLimits(renewal);
+  tau->growLeaf(tau->root);
+  tau->growLeaf(tau->root->children[renewal[0]]);
   
-  vector<vlmcNode*> allNodes = tau->root->getNodes();
-  for(const auto &node : allNodes){
-    if(node->renewal_limit){
-      Rcout << node->getPath() << "\n";
-    }
-  }
+   // vector<vlmcNode*> allNodes = tau->root->getNodes();
+   // for(const auto &node : allNodes){
+   //   if(node->renewal_limit){
+   //     Rcout << node->getPath() << "\n";
+   //   }
+   // }
+  
   
   // Training: Metropolis-Hastings
   
@@ -63,7 +66,7 @@ List ibf_comp(List z_test,
         int toGrow = floor(runif(1,0,n_growable)[0]);
         vlmcNode* nodeToGrow = growableLeaves[toGrow];
         tau->growLeaf(nodeToGrow);
-        n_prunnable = tau->getPrunnableLeaves(true, renewal).size();
+        n_prunnable = tau->getPrunnableLeaves(true).size();
         logratio = -nodeToGrow->node_logq_diff + 
           log(n_prunnable) - log(m) - log(n_growable) -
           logprior_penalty;
@@ -73,7 +76,7 @@ List ibf_comp(List z_test,
         }
       }
     } else {          // Propose prune
-      prunnableLeaves = tau->getPrunnableLeaves(false, renewal);
+      prunnableLeaves = tau->getPrunnableLeaves(true);
       n_prunnable = prunnableLeaves.size();
       if(n_prunnable > 0){
         int toPrune = floor(runif(1,0,n_prunnable)[0]);
@@ -89,7 +92,7 @@ List ibf_comp(List z_test,
         }
       }
     }
-    if(t > burnin){
+    if(t >= burnin){
       string this_tree = tau->concatLeaves();
       auto search = logQ.find(this_tree);
       if(search == logQ.end()){

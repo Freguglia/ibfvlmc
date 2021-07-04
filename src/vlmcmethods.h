@@ -61,7 +61,7 @@ public:
   void pruneLeaf(vlmcNode* leaf);
   void growLeaf(vlmcNode* leaf);
   vector<vlmcNode*> getVlmcLeaves();
-  vector<vlmcNode*> getPrunnableLeaves(bool is_c, IntegerVector renewal);
+  vector<vlmcNode*> getPrunnableLeaves(bool is_c);
   vector<vlmcNode*> getGrowableLeaves();
   unsigned int H;
   unsigned int m;

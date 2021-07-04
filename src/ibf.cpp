@@ -53,7 +53,7 @@ List ibf(List z_test,
         int toGrow = floor(runif(1,0,n_growable)[0]);
         vlmcNode* nodeToGrow = growableLeaves[toGrow];
         tau->growLeaf(nodeToGrow);
-        n_prunnable = tau->getPrunnableLeaves(false, renewal).size();
+        n_prunnable = tau->getPrunnableLeaves(false).size();
         logratio = -nodeToGrow->node_logq_diff + 
           log(n_prunnable) - log(m) - log(n_growable) -
           logprior_penalty;
@@ -63,7 +63,7 @@ List ibf(List z_test,
         }
       }
     } else {          // Propose prune
-      prunnableLeaves = tau->getPrunnableLeaves(false, renewal);
+      prunnableLeaves = tau->getPrunnableLeaves(false);
       n_prunnable = prunnableLeaves.size();
       if(n_prunnable > 0){
         int toPrune = floor(runif(1,0,n_prunnable)[0]);
