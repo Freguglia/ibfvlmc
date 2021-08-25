@@ -4,10 +4,13 @@
 #' @importFrom dplyr left_join mutate arrange desc
 #' @importFrom Brobdingnag as.brob
 expected_Q <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
-                       Hmax = 8, alpha = 1/2, logpenalty = 2, renewal = NULL){
+                       Hmax = 8, alpha = 1/2, logpenalty = 2, renewal = NULL,
+                       prohibited = NULL){
   if(is.null(renewal)) renewal <- numeric()
   m <- length(unique(ztrain))
-  outcpp <- ibf(ztest, ztrain, renewal, alpha,
+  if(is.null(prohibited)){
+    prohibited = lapply(1:m, function(x) integer(0))}
+  outcpp <- ibf(ztest, ztrain, renewal, prohibited, alpha,
                 logpenalty, Hmax, m, burnin, nsamples)
   out <- as_tibble(outcpp$logQ) %>%
     left_join(as_tibble(outcpp$posterior), by = "tree") %>%
@@ -21,10 +24,13 @@ expected_Q <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
 
 #' @export
 expected_Q_cmp <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
-                           Hmax = 8, alpha = 1/2, logpenalty = 2, renewal = NULL){
+                           Hmax = 8, alpha = 1/2, logpenalty = 2, renewal = NULL,
+                           prohibited = NULL){
   if(is.null(renewal)) renewal <- numeric()
   m <- length(unique(ztrain))
-  outcpp <- ibf_comp(ztest, ztrain, renewal, alpha,
+  if(is.null(prohibited)){
+    prohibited = lapply(1:m, function(x) integer(0))}
+  outcpp <- ibf_comp(ztest, ztrain, renewal, prohibited, alpha,
                 logpenalty, Hmax, m, burnin, nsamples)
   out <- as_tibble(outcpp$logQ) %>%
     left_join(as_tibble(outcpp$posterior), by = "tree") %>%
@@ -42,11 +48,12 @@ partial_bf <- function(ztest, ztrain,
                           Hmax = 8,
                           alpha0 = 1/2, alpha1 = 1/2,
                           logpenalty0 = 2, logpenalty1 = 2,
-                          renewal0 = 0, renewal1 = numeric()){
+                          renewal0 = 0, renewal1 = numeric(),
+                          prohibited = NULL){
   Q0 <- expected_Q(ztest, ztrain, nsamples, burnin, Hmax, alpha0,
-                    logpenalty0, renewal = renewal0)
+                    logpenalty0, renewal = renewal0, prohibited)
   Q1 <- expected_Q(ztest, ztrain, nsamples, burnin, Hmax, alpha1,
-                    logpenalty1, renewal = renewal1)
+                    logpenalty1, renewal = renewal1, prohibited)
   return(list(pbf = as.numeric(Q0$EQ/Q1$EQ),
          Q0 = Q0,
          Q1 = Q1))
@@ -58,11 +65,12 @@ partial_bf_cmp<- function(ztest, ztrain,
                           Hmax = 8,
                           alpha0 = 1/2, alpha1 = 1/2,
                           logpenalty0 = 2, logpenalty1 = 2,
-                          renewal = 0){
+                          renewal = 0,
+                          prohibited = NULL){
   Q0 <- expected_Q(ztest, ztrain, nsamples, burnin, Hmax, alpha0,
-                    logpenalty0, renewal = renewal)
+                    logpenalty0, renewal = renewal, prohibited = prohibited)
   Q1 <- expected_Q_cmp(ztest, ztrain, nsamples, burnin, Hmax, alpha1,
-                    logpenalty1, renewal = renewal)
+                    logpenalty1, renewal = renewal, prohibited = prohibited)
   return(list(pbf = as.numeric(Q0$EQ/Q1$EQ),
          Q0 = Q0,
          Q1 = Q1))

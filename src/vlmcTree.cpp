@@ -7,10 +7,10 @@ void vlmcTree::clear(){
   }
 }
 
-vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal){
+vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal, List prohibited){
   root = new vlmcNode(-1);
   root->h = 0;
-  root->growPerfect(alphlen, Hmax, renewal);
+  root->growPerfect(alphlen, Hmax, renewal, prohibited);
   H = Hmax;
   m = alphlen;
   n_train = 0;
@@ -173,7 +173,7 @@ vector<vlmcNode*> vlmcTree::getPrunnableLeaves(bool is_c){
   }
   if(is_c && sum(thisIsLimit) == m) {
     vector<vlmcNode*> out;
-    for(int i=0; i<res.size(); i++){
+    for(unsigned int i=0; i<res.size(); i++){
       if(!thisIsLimit[i]){
         out.push_back(res[i]);
       }
@@ -235,7 +235,7 @@ void vlmcTree::assignLimits(IntegerVector renewal){
     is_renewal = false;
     
     for(unsigned int k=0; k<n_renewal; k++){
-      if(thisNode->label == renewal[k]){
+      if((int)thisNode->label == renewal[k]){
         is_renewal = true;
       }
     }

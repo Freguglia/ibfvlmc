@@ -8,15 +8,16 @@ vlmcTree* generate_pst(List context_list,
                        unsigned int m){
   
   IntegerVector empty(0);
+  List emptyList(m);
   unsigned int Hmax = 0;
-  vlmcTree* tau = new vlmcTree(m, Hmax, empty);
+  vlmcTree* tau = new vlmcTree(m, Hmax, empty, emptyList);
   
   for(int s=0; s<context_list.size(); s++){
     IntegerVector path = context_list[s];
     vlmcNode* node = tau->root;
     for(int d=0; d<path.size(); d++){
       if(node->children.size() == 0){
-        node->growChildren(m, empty);
+        node->growChildren(m, empty, emptyList);
       }
       node = node->children[path[d]];
     }
@@ -36,18 +37,18 @@ IntegerVector rvlmc_cpp(unsigned int n,
   int m = as<IntegerVector>(probs[0]).size();
   IntegerVector A = seq_len(m) - 1;
   
-  int H = 0;
+  unsigned int H = 0;
   for(int s = 0; s<context_list.size(); s++){
-    int suffix_len = as<IntegerVector>(context_list[s]).size();
+    unsigned int suffix_len = as<IntegerVector>(context_list[s]).size();
     H = max(H, suffix_len); 
   }
   
   vlmcTree* tau = generate_pst(context_list, probs, m);
   
-  for(int t=0; t<H; t++){
+  for(unsigned int t=0; t<H; t++){
     z[t] = RcppArmadillo::sample(A, 1, false)[0];
   }
-  for(int t=H; t<n; t++){
+  for(unsigned int t=H; t<n; t++){
     vlmcNode* node = tau->root;
     unsigned int d = 1;
     while(node->children.size() > 0){

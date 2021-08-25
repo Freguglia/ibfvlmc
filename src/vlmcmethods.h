@@ -35,11 +35,11 @@ public:
   unsigned int h;
   bool vlmcLeaf = false;
   bool tested = false;
-  void growPerfect(unsigned int m, unsigned int H, IntegerVector renewal);
+  void growPerfect(unsigned int m, unsigned int H, IntegerVector renewal, List prohibited);
   string getPath();
   unsigned int getN_train();
   unsigned int getN_test();
-  void growChildren(unsigned int m, IntegerVector renewal);
+  void growChildren(unsigned int m, IntegerVector renewal, List prohibited);
   bool renewal_limit = false;
 private:
   bool isLeaf();
@@ -48,7 +48,7 @@ private:
 
 class vlmcTree{
 public:
-  vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal);
+  vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal, List prohibited);
   ~vlmcTree();
   void addData_train(IntegerVector z, bool reset);
   void addData_test(IntegerVector z, bool reset);

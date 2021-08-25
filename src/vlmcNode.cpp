@@ -12,10 +12,10 @@ vlmcNode::~vlmcNode(){
   }
 }
 
-void vlmcNode::growChildren(unsigned int m, IntegerVector renewal){
+void vlmcNode::growChildren(unsigned int m, IntegerVector renewal, List prohibited){
   if(this->children.size() == 0){
     vector<vlmcNode*> ch;
-    for(int i=0; i<m; i++){
+    for(unsigned int i=0; i<m; i++){
       bool is_renewal = false;
       for(int j=0; j<renewal.size(); j++){
         if(renewal[j] == this->label){
@@ -33,16 +33,16 @@ void vlmcNode::growChildren(unsigned int m, IntegerVector renewal){
   }
 }
 
-void vlmcNode::growPerfect(unsigned int m, unsigned int H, IntegerVector renewal){
+void vlmcNode::growPerfect(unsigned int m, unsigned int H, IntegerVector renewal, List prohibited){
   // Only allowed in an empty tree.
   if(this->parent == NULL && this->children.size() == 0){
-    int l;
+    unsigned int l;
     vector<vlmcNode*> currentLeaves;
     for(unsigned int h=0; h<H; h++){
       currentLeaves = this->getLeaves();
       l = currentLeaves.size();
-      for(long unsigned int i=0; i<l; i++){
-        currentLeaves[i]->growChildren(m, renewal);
+      for(unsigned int i=0; i<l; i++){
+        currentLeaves[i]->growChildren(m, renewal, prohibited);
       }
     }
   }
@@ -78,9 +78,9 @@ vector<vlmcNode*> vlmcNode::getNodes(){
   vector<vlmcNode*> nodes;
   nodes.push_back(this);
   if(this->children.size() > 0){
-    int i = 0;
+    unsigned int i = 0;
     while(i < nodes.size()){
-      for(long unsigned int j=0; j<nodes[i]->children.size(); j++){
+      for(unsigned int j=0; j<nodes[i]->children.size(); j++){
         nodes.push_back(nodes[i]->children[j]);
       }    
       i++;
@@ -92,8 +92,8 @@ vector<vlmcNode*> vlmcNode::getNodes(){
 vector<vlmcNode*> vlmcNode::getLeaves(){
   vector<vlmcNode*> leaves;
   vector<vlmcNode*> allNodes = this->getNodes();
-  int l = allNodes.size();
-  for(long unsigned int i=0; i<l; i++){
+  unsigned int l = allNodes.size();
+  for(unsigned int i=0; i<l; i++){
     if(allNodes[i]->isLeaf()){
       leaves.push_back(allNodes[i]);
     }

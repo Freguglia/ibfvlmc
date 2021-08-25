@@ -4,6 +4,7 @@
 List ibf(List z_test,
          IntegerVector z_train,
          IntegerVector renewal,
+         List prohibited,
          double alpha = 1/2,
          double logprior_penalty = 2,
          unsigned int Hmax = 5,
@@ -13,7 +14,8 @@ List ibf(List z_test,
   unsigned int all_samples = burnin + nsamples;
   int m = alphlen;
   // Allocate maximal tree
-  vlmcTree* tau = new vlmcTree(alphlen, Hmax, renewal);
+  Rcout << "Entrei ibf \n";
+  vlmcTree* tau = new vlmcTree(alphlen, Hmax, renewal, prohibited);
   
   // Training: Metropolis-Hastings
   
@@ -32,10 +34,8 @@ List ibf(List z_test,
   // Run Metropolis-Hastings on Training data.
   bool move_is_grow;
   vector<vlmcNode*> growableLeaves;
-  vlmcNode* nodeToGrow;
   unsigned int n_growable;
   vector<vlmcNode*> prunnableLeaves;
-  vlmcNode* nodeToPrune;
   unsigned int n_prunnable;
   double u, logratio;
   
