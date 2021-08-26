@@ -14,7 +14,6 @@ List ibf(List z_test,
   unsigned int all_samples = burnin + nsamples;
   int m = alphlen;
   // Allocate maximal tree
-  Rcout << "Entrei ibf \n";
   vlmcTree* tau = new vlmcTree(alphlen, Hmax, renewal, prohibited);
   
   // Training: Metropolis-Hastings

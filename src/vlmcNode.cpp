@@ -13,7 +13,7 @@ vlmcNode::~vlmcNode(){
 }
 
 void vlmcNode::growChildren(unsigned int m, IntegerVector renewal, List prohibited){
-  if(this->children.size() == 0){
+  if(this->children.size() == 0 && !this->is_prohibited){
     vector<vlmcNode*> ch;
     unsigned int this_label = this->label;
     IntegerVector proh;

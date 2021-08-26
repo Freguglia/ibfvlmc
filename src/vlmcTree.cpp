@@ -84,17 +84,21 @@ void vlmcTree::cacheQ_train(double alpha){
   unsigned int n_tot;
   vector<double> ns(m);
   for(unsigned int i=0; i<nodes.size(); i++){
-    logq = lgamma(m*alpha) - m*lgamma(alpha);
-    n_tot = 0;
-    for (unsigned int j=0; j<m; j++){
-      ns[j] = (double)nodes[i]->cnts_train[j];
-      n_tot += ns[j];
+    if(!nodes[i]->is_prohibited){
+      logq = lgamma(m*alpha) - m*lgamma(alpha);
+      n_tot = 0;
+      for (unsigned int j=0; j<m; j++){
+        ns[j] = (double)nodes[i]->cnts_train[j];
+        n_tot += ns[j];
+      }
+      for (unsigned int j=0; j<m; j++){
+        logq += lgamma(ns[j] + alpha);
+      }
+      logq = logq - lgamma(n_tot + m*alpha);
+      nodes[i]->node_logq_train = logq;
+    } else {
+      nodes[i]->node_logq_train = 0.0;
     }
-    for (unsigned int j=0; j<m; j++){
-      logq += lgamma(ns[j] + alpha);
-    }
-    logq = logq - lgamma(n_tot + m*alpha);
-    nodes[i]->node_logq_train = logq;
   }
   for(unsigned int i=0; i<nodes.size(); i++){
     logq_children = 0.0;
@@ -116,17 +120,21 @@ void vlmcTree::cacheQ_test(double alpha){
   unsigned int n_tot;
   vector<double> ns(m);
   for(unsigned int i=0; i<nodes.size(); i++){
-    logq = lgamma(m*alpha) - m*lgamma(alpha);
-    n_tot = 0;
-    for (unsigned int j=0; j<m; j++){
-      ns[j] = (double)nodes[i]->cnts_test[j];
-      n_tot += ns[j];
+    if(!nodes[i]->is_prohibited){
+      logq = lgamma(m*alpha) - m*lgamma(alpha);
+      n_tot = 0;
+      for (unsigned int j=0; j<m; j++){
+        ns[j] = (double)nodes[i]->cnts_test[j];
+        n_tot += ns[j];
+      }
+      for (unsigned int j=0; j<m; j++){
+        logq += lgamma(ns[j] + alpha);
+      }
+      logq = logq - lgamma(n_tot + m*alpha);
+      nodes[i]->node_logq_test = logq; 
+    } else {
+      nodes[i]->node_logq_test = 0.0;
     }
-    for (unsigned int j=0; j<m; j++){
-      logq += lgamma(ns[j] + alpha);
-    }
-    logq = logq - lgamma(n_tot + m*alpha);
-    nodes[i]->node_logq_test = logq;
   }
 }
 
@@ -212,7 +220,9 @@ string vlmcTree::concatLeaves(){
   vector<vlmcNode*> leaves = this->getVlmcLeaves();
   vector<string> paths;
   for(long unsigned int i=0; i<leaves.size(); i++){
-    paths.push_back(leaves[i]->getPath());
+    if(!leaves[i]->is_prohibited){
+      paths.push_back(leaves[i]->getPath()); 
+    }
   }
   string s = "{";
   for(const auto &piece : paths) s += piece + ',';
