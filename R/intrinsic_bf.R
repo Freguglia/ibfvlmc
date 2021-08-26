@@ -6,7 +6,7 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
                          Hmax = 5,
                          prohibited = NULL,
                          alpha0 = 1/2, alpha1 = 1/2,
-                         logpenalty0 = NULL, logpenalty1 = NULL,
+                         logpenalty0 = 0, logpenalty1 = 0,
                          seed = NULL){
   init_time <- Sys.time()
   I <- length(z)
@@ -38,7 +38,7 @@ intrinsic_bf_cmp <- function(z, renewal,
                          Hmax = 5,
                          prohibited = NULL,
                          alpha0 = 1/2, alpha1 = 1/2,
-                         logpenalty0 = NULL, logpenalty1 = NULL,
+                         logpenalty0 = 0, logpenalty1 = 0,
                          seed = NULL){
   init_time <- Sys.time()
   I <- length(z)
