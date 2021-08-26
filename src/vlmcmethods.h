@@ -41,6 +41,7 @@ public:
   unsigned int getN_test();
   void growChildren(unsigned int m, IntegerVector renewal, List prohibited);
   bool renewal_limit = false;
+  bool is_prohibited = false;
 private:
   bool isLeaf();
   

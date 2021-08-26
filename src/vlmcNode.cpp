@@ -15,17 +15,35 @@ vlmcNode::~vlmcNode(){
 void vlmcNode::growChildren(unsigned int m, IntegerVector renewal, List prohibited){
   if(this->children.size() == 0){
     vector<vlmcNode*> ch;
-    for(unsigned int i=0; i<m; i++){
+    unsigned int this_label = this->label;
+    IntegerVector proh;
+    if(this->parent != NULL){
+      proh = as<IntegerVector>(prohibited[this->label]); 
+    } else {
+      proh = {99}; 
+    }
+    for(int i=0; i<m; i++){
       bool is_renewal = false;
       for(int j=0; j<renewal.size(); j++){
-        if(renewal[j] == this->label){
+        if(renewal[j] == this_label){
           is_renewal = true;
         }
       }
       if(this->parent == NULL || !is_renewal){
+        bool i_prohibited = false;
+        for(int j=0; j<proh.size(); j++){
+          if(i == proh[j]){
+            i_prohibited = true;
+          }
+        }
         vlmcNode* a = new vlmcNode(i);
         a->parent = this;
-        a->h = a->parent->h + 1;
+        a->h = this->h + 1;
+        if(i_prohibited){
+          a->is_prohibited = true;
+        } else {
+          a->is_prohibited = false;
+        }
         ch.push_back(a);
       }
     }
