@@ -62,7 +62,7 @@ List ibf_comp(List z_test,
           log(n_prunnable) - log(m) - log(n_growable) -
           logprior_penalty;
         u = runif(1,0,1)[0];
-        if(log(u)>logratio){ //Rejected proposed tree, so we roll back.
+        if(log(u)>logratio && t >= burnin){ //Rejected proposed tree, so we roll back.
           tau->pruneLeaf(nodeToGrow->children[0]);
         }
       }
@@ -78,7 +78,7 @@ List ibf_comp(List z_test,
           log(n_growable) - log(n_prunnable) + log(m) +
           logprior_penalty;
         u = runif(1,0,1)[0];
-        if(log(u)>logratio){ //Rejected proposed tree, so we roll back.
+        if(log(u)>logratio && t >= burnin){ //Rejected proposed tree, so we roll back.
           tau->growLeaf(nodeToPrune->parent);
         }
       }
