@@ -6,8 +6,11 @@
 expected_Q <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
                        Hmax = 8, alpha = 1/2, logpenalty = 2, renewal = NULL,
                        allowedMatrix = NULL){
+  if(!is.list(ztest)) {stop("'ztest' must be a list.")}
+  if(!is.list(ztrain)) {stop("'ztrain' must be a list.")}
+  
   if(is.null(renewal)) renewal <- integer()
-  m <- length(unique(ztrain))
+  m <- length(unique(ztest[[1]]))
   if(is.null(allowedMatrix)) allowedMatrix <- matrix(TRUE, nrow = m, ncol = m)
   outcpp <- ibf(ztest, ztrain, renewal, allowedMatrix, alpha,
                 logpenalty, Hmax, m, burnin, nsamples)
@@ -25,8 +28,11 @@ expected_Q <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
 expected_Q_cmp <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
                            Hmax = 8, alpha = 1/2, logpenalty = 2, renewal = NULL,
                            allowedMatrix = NULL){
+  if(!is.list(ztest)) {stop("'ztest' must be a list.")}
+  if(!is.list(ztrain)) {stop("'ztrain' must be a list.")}
+  
   if(is.null(renewal)) renewal <- integer()
-  m <- length(unique(ztrain))
+  m <- length(unique(ztest[[1]]))
   if(is.null(allowedMatrix)) allowedMatrix <- matrix(TRUE, nrow = m, ncol = m)
   outcpp <- ibf_comp(ztest, ztrain, renewal, allowedMatrix, alpha,
                 logpenalty, Hmax, m, burnin, nsamples)

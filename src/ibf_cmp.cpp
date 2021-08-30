@@ -2,7 +2,7 @@
 
 // [[Rcpp::export]]
 List ibf_comp(List z_test,
-              IntegerVector z_train,
+              List z_train,
               IntegerVector renewal,
               LogicalMatrix allowedMatrix,
               double alpha = 1/2,
@@ -20,7 +20,6 @@ List ibf_comp(List z_test,
   tau->assignLimits(renewal);
   tau->growLeaf(tau->root);
   tau->growLeaf(tau->root->children[renewal[0]]);
-  
   // Training: Metropolis-Hastings
   
   // Add data
@@ -30,10 +29,14 @@ List ibf_comp(List z_test,
     tau->addData_test(z, is_first);
   }
   
-  tau->addData_train(z_train, true);
+  for(unsigned int i = 0; i<z_train.size(); i++){
+    IntegerVector z = as<IntegerVector>(z_train[i]);
+    bool is_first = i==0;
+    tau->addData_train(z, is_first);
+  }
   
-  tau->cacheQ_train(alpha);
-  tau->cacheQ_test(alpha);
+  tau->cacheQ_train(alpha, allowedMatrix);
+  tau->cacheQ_test(alpha, allowedMatrix);
  
   // Run Metropolis-Hastings on Training data.
   bool move_is_grow;
@@ -62,7 +65,7 @@ List ibf_comp(List z_test,
           log(n_prunnable) - log(m) - log(n_growable) -
           logprior_penalty;
         u = runif(1,0,1)[0];
-        if(log(u)>logratio && t >= burnin){ //Rejected proposed tree, so we roll back.
+        if(log(u)>logratio){ //Rejected proposed tree, so we roll back.
           tau->pruneLeaf(nodeToGrow->children[0]);
         }
       }
@@ -78,7 +81,7 @@ List ibf_comp(List z_test,
           log(n_growable) - log(n_prunnable) + log(m) +
           logprior_penalty;
         u = runif(1,0,1)[0];
-        if(log(u)>logratio && t >= burnin){ //Rejected proposed tree, so we roll back.
+        if(log(u)>logratio){ //Rejected proposed tree, so we roll back.
           tau->growLeaf(nodeToPrune->parent);
         }
       }

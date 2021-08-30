@@ -15,9 +15,11 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
   if(is.null(logpenalty0)) logpenalty0 <- m - length(renewal0)
   if(is.null(logpenalty1)) logpenalty1 <- m - length(renewal1)
   
-  partials <- future_map(1:I, function(i) {
+  cbn <- combn(1:I, 2)
+  cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
+  partials <- future_map(1:length(cbn), function(i) {
     set.seed(seed + i)
-    partial_bf(ztest = z[-i], ztrain = z[[i]],
+    partial_bf(ztest = z[-cbn[[i]]], ztrain = z[cbn[[i]]],
                nsamples = nsamples, burnin = burnin,
                Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
                logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
@@ -26,7 +28,7 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
   }, .options = furrr_options(seed = NULL))
   pbfs <- map_dbl(partials, "pbf")
   ibf_arithmetic <- mean(pbfs)
-  ibf_geometric <- prod(pbfs^(1/I))
+  ibf_geometric <- prod(pbfs^(1/length(cbn)))
   total_time <- Sys.time() - init_time
   return(list(ibf_arithmetic = ibf_arithmetic,
               ibf_geometric = ibf_geometric,
@@ -48,9 +50,11 @@ intrinsic_bf_cmp <- function(z, renewal,
   if(is.null(logpenalty0)) logpenalty0 <- m - length(renewal)
   if(is.null(logpenalty1)) logpenalty1 <- m
   
-  partials <- future_map(1:I, function(i) {
+  cbn <- combn(1:I, 2)
+  cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
+  partials <- future_map(1:length(cbn), function(i) {
     set.seed(seed + i)
-    partial_bf_cmp(ztest = z[-i], ztrain = z[[i]],
+    partial_bf_cmp(ztest = z[-cbn[[i]]], ztrain = z[cbn[[i]]],
                nsamples = nsamples, burnin = burnin,
                Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
                logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
@@ -58,7 +62,7 @@ intrinsic_bf_cmp <- function(z, renewal,
   }, .options = furrr_options(seed = NULL))
   pbfs <- map_dbl(partials, "pbf")
   ibf_arithmetic <- mean(pbfs)
-  ibf_geometric <- prod(pbfs^(1/I))
+  ibf_geometric <- prod(pbfs^(1/length(cbn)))
   total_time <- Sys.time() - init_time
   return(list(ibf_arithmetic = ibf_arithmetic,
               ibf_geometric = ibf_geometric,

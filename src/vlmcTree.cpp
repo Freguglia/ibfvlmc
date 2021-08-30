@@ -14,7 +14,6 @@ vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewa
   root->growPerfect(alphlen, Hmax, renewal, allowedMatrix);
   H = Hmax;
   m = alphlen;
-  allowedMatrix = allowedMatrix;
   n_train = 0;
   n_test = 0;
   root->vlmcLeaf = true;
@@ -78,7 +77,7 @@ void vlmcTree::addData_test(IntegerVector z, bool reset = true){
   this->n_test += (n - H);
 }
 
-void vlmcTree::cacheQ_train(double alpha){
+void vlmcTree::cacheQ_train(double alpha, LogicalMatrix allowedMatrix){
   vector<vlmcNode*> nodes = this->root->getNodes();
   unsigned int m = this->m;
   double logq;
@@ -87,16 +86,28 @@ void vlmcTree::cacheQ_train(double alpha){
   vector<double> ns(m);
   for(unsigned int i=0; i<nodes.size(); i++){
     if(!nodes[i]->is_prohibited){
-      logq = lgamma(m*alpha) - m*lgamma(alpha);
+      LogicalVector allowedVector(m);
+      if(nodes[i]->h==0){
+        allowedVector = LogicalVector(m, true);
+      } else {
+        allowedVector = allowedMatrix( nodes[i]->headLabel , _ );
+      }
+      int tot_allowed = sum(allowedVector);
+      
+      logq = lgamma(tot_allowed*alpha) - tot_allowed*lgamma(alpha);
       n_tot = 0;
       for (unsigned int j=0; j<m; j++){
-        ns[j] = (double)nodes[i]->cnts_train[j];
-        n_tot += ns[j];
+        if(allowedVector[j]){
+          ns[j] = (double)nodes[i]->cnts_train[j];
+          n_tot += ns[j]; 
+        }
       }
       for (unsigned int j=0; j<m; j++){
-        logq += lgamma(ns[j] + alpha);
+        if(allowedVector[j]) {
+          logq += lgamma(ns[j] + alpha);
+        }
       }
-      logq = logq - lgamma(n_tot + m*alpha);
+      logq = logq - lgamma(n_tot + tot_allowed*alpha);
       nodes[i]->node_logq_train = logq;
     } else {
       nodes[i]->node_logq_train = 0.0;
@@ -115,24 +126,36 @@ void vlmcTree::cacheQ_train(double alpha){
   }
 }
 
-void vlmcTree::cacheQ_test(double alpha){
+void vlmcTree::cacheQ_test(double alpha, LogicalMatrix allowedMatrix){
   vector<vlmcNode*> nodes = this->root->getNodes();
   unsigned int m = this->m;
   double logq;
   unsigned int n_tot;
   vector<double> ns(m);
   for(unsigned int i=0; i<nodes.size(); i++){
+    LogicalVector allowedVector(m);
     if(!nodes[i]->is_prohibited){
-      logq = lgamma(m*alpha) - m*lgamma(alpha);
+      if(nodes[i]->h==0){
+        allowedVector = LogicalVector(m, true);
+      } else {
+        allowedVector = allowedMatrix( nodes[i]->headLabel , _ );
+      }
+      int tot_allowed = sum(allowedVector);
+      
+      logq = lgamma(tot_allowed*alpha) - tot_allowed*lgamma(alpha);
       n_tot = 0;
       for (unsigned int j=0; j<m; j++){
-        ns[j] = (double)nodes[i]->cnts_test[j];
-        n_tot += ns[j];
+        if(allowedVector[j]){
+          ns[j] = (double)nodes[i]->cnts_test[j];
+          n_tot += ns[j]; 
+        }
       }
       for (unsigned int j=0; j<m; j++){
-        logq += lgamma(ns[j] + alpha);
+        if(allowedVector[j]) {
+          logq += lgamma(ns[j] + alpha);
+        }
       }
-      logq = logq - lgamma(n_tot + m*alpha);
+      logq = logq - lgamma(n_tot + tot_allowed*alpha);
       nodes[i]->node_logq_test = logq; 
     } else {
       nodes[i]->node_logq_test = 0.0;

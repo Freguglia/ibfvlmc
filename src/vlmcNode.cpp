@@ -27,7 +27,7 @@ void vlmcNode::growChildren(unsigned int m, IntegerVector renewal,
     }
     
     // Create m child nodes
-    for(int i=0; i<m; i++){
+    for(unsigned int i=0; i<m; i++){
       bool is_renewal = false;
       for(int j=0; j<renewal.size(); j++){
         if(renewal[j] == this_label){
@@ -40,7 +40,7 @@ void vlmcNode::growChildren(unsigned int m, IntegerVector renewal,
         vlmcNode* a = new vlmcNode(i);
         a->parent = this;
         a->h = this->h + 1;
-        if(this->parent == NULL){
+        if(a->h == 1){
           a->headLabel = i;
         } else {
           a->headLabel = this->headLabel;

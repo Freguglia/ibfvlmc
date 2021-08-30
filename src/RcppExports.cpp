@@ -7,13 +7,13 @@
 using namespace Rcpp;
 
 // ibf
-List ibf(List z_test, IntegerVector z_train, IntegerVector renewal, LogicalMatrix allowedMatrix, double alpha, double logprior_penalty, unsigned int Hmax, unsigned int alphlen, unsigned int burnin, unsigned int nsamples);
+List ibf(List z_test, List z_train, IntegerVector renewal, LogicalMatrix allowedMatrix, double alpha, double logprior_penalty, unsigned int Hmax, unsigned int alphlen, unsigned int burnin, unsigned int nsamples);
 RcppExport SEXP _ibfvlmc_ibf(SEXP z_testSEXP, SEXP z_trainSEXP, SEXP renewalSEXP, SEXP allowedMatrixSEXP, SEXP alphaSEXP, SEXP logprior_penaltySEXP, SEXP HmaxSEXP, SEXP alphlenSEXP, SEXP burninSEXP, SEXP nsamplesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type z_test(z_testSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type z_train(z_trainSEXP);
+    Rcpp::traits::input_parameter< List >::type z_train(z_trainSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type renewal(renewalSEXP);
     Rcpp::traits::input_parameter< LogicalMatrix >::type allowedMatrix(allowedMatrixSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
@@ -27,13 +27,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // ibf_comp
-List ibf_comp(List z_test, IntegerVector z_train, IntegerVector renewal, LogicalMatrix allowedMatrix, double alpha, double logprior_penalty, unsigned int Hmax, unsigned int alphlen, unsigned int burnin, unsigned int nsamples);
+List ibf_comp(List z_test, List z_train, IntegerVector renewal, LogicalMatrix allowedMatrix, double alpha, double logprior_penalty, unsigned int Hmax, unsigned int alphlen, unsigned int burnin, unsigned int nsamples);
 RcppExport SEXP _ibfvlmc_ibf_comp(SEXP z_testSEXP, SEXP z_trainSEXP, SEXP renewalSEXP, SEXP allowedMatrixSEXP, SEXP alphaSEXP, SEXP logprior_penaltySEXP, SEXP HmaxSEXP, SEXP alphlenSEXP, SEXP burninSEXP, SEXP nsamplesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< List >::type z_test(z_testSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type z_train(z_trainSEXP);
+    Rcpp::traits::input_parameter< List >::type z_train(z_trainSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type renewal(renewalSEXP);
     Rcpp::traits::input_parameter< LogicalMatrix >::type allowedMatrix(allowedMatrixSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);

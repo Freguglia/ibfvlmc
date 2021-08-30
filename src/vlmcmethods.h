@@ -54,8 +54,8 @@ public:
   ~vlmcTree();
   void addData_train(IntegerVector z, bool reset);
   void addData_test(IntegerVector z, bool reset);
-  void cacheQ_train(double alpha);
-  void cacheQ_test(double alpha);
+  void cacheQ_train(double alpha, LogicalMatrix allowedMatrix);
+  void cacheQ_test(double alpha, LogicalMatrix allowedMatrix);
   string concatLeaves();
   unsigned int n_train;
   unsigned int n_test;
