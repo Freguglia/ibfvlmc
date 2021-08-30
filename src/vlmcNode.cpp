@@ -40,6 +40,11 @@ void vlmcNode::growChildren(unsigned int m, IntegerVector renewal,
         vlmcNode* a = new vlmcNode(i);
         a->parent = this;
         a->h = this->h + 1;
+        if(this->parent == NULL){
+          a->headLabel = i;
+        } else {
+          a->headLabel = this->headLabel;
+        }
         if(i_prohibited){
           a->is_prohibited = true;
         } else {

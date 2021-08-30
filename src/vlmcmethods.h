@@ -21,6 +21,7 @@ public:
   vlmcNode(int lbl);
   ~vlmcNode();
   unsigned int label;
+  unsigned int headLabel;
   vector<unsigned int> cnts_train;
   vector<unsigned int> cnts_test;
   double node_logq_train;
@@ -67,6 +68,7 @@ public:
   unsigned int H;
   unsigned int m;
   vlmcNode* root;
+  LogicalMatrix allowedMatrix;
   void assignLimits(IntegerVector renewal);
 };
 
