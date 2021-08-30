@@ -14,7 +14,7 @@ expected_Q <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
   out <- as_tibble(outcpp$logQ) %>%
     left_join(as_tibble(outcpp$posterior), by = "tree") %>%
     mutate(prob = count/sum(count)) %>%
-    arrange(desc(prob))
+    arrange(desc(logq))
   Q <- as.brob(out$logq)
   Q <- exp(Q)
   Q <- Q*out$prob
@@ -33,7 +33,7 @@ expected_Q_cmp <- function(ztest, ztrain, nsamples = 20000, burnin = 10000,
   out <- as_tibble(outcpp$logQ) %>%
     left_join(as_tibble(outcpp$posterior), by = "tree") %>%
     mutate(prob = count/sum(count)) %>%
-    arrange(desc(prob))
+    arrange(desc(logq))
   Q <- as.brob(out$logq)
   Q <- exp(Q)
   Q <- Q*out$prob
