@@ -4,7 +4,7 @@
 intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
                          nsamples = 20000, burnin = 10000,
                          Hmax = 5,
-                         prohibited = NULL,
+                         allowedMatrix = NULL,
                          alpha0 = 1/2, alpha1 = 1/2,
                          logpenalty0 = 0, logpenalty1 = 0,
                          seed = NULL){
@@ -21,7 +21,8 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
                nsamples = nsamples, burnin = burnin,
                Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
                logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
-               renewal0 = renewal0, renewal1 = renewal1, prohibited = prohibited)
+               renewal0 = renewal0, renewal1 = renewal1,
+               allowedMatrix = allowedMatrix)
   }, .options = furrr_options(seed = NULL))
   pbfs <- map_dbl(partials, "pbf")
   ibf_arithmetic <- mean(pbfs)
@@ -36,7 +37,7 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
 intrinsic_bf_cmp <- function(z, renewal,
                          nsamples = 20000, burnin = 10000,
                          Hmax = 5,
-                         prohibited = NULL,
+                         allowedMatrix = NULL,
                          alpha0 = 1/2, alpha1 = 1/2,
                          logpenalty0 = 0, logpenalty1 = 0,
                          seed = NULL){
@@ -53,7 +54,7 @@ intrinsic_bf_cmp <- function(z, renewal,
                nsamples = nsamples, burnin = burnin,
                Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
                logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
-               renewal = renewal, prohibited = prohibited)
+               renewal = renewal, allowedMatrix = allowedMatrix)
   }, .options = furrr_options(seed = NULL))
   pbfs <- map_dbl(partials, "pbf")
   ibf_arithmetic <- mean(pbfs)

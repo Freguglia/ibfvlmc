@@ -4,7 +4,7 @@
 List ibf(List z_test,
          IntegerVector z_train,
          IntegerVector renewal,
-         List prohibited,
+         LogicalMatrix allowedMatrix,
          double alpha = 1/2,
          double logprior_penalty = 2,
          unsigned int Hmax = 5,
@@ -14,7 +14,7 @@ List ibf(List z_test,
   unsigned int all_samples = burnin + nsamples;
   int m = alphlen;
   // Allocate maximal tree
-  vlmcTree* tau = new vlmcTree(alphlen, Hmax, renewal, prohibited);
+  vlmcTree* tau = new vlmcTree(alphlen, Hmax, renewal, allowedMatrix);
   
   // Training: Metropolis-Hastings
   
@@ -73,7 +73,7 @@ List ibf(List z_test,
           log(n_growable) - log(n_prunnable) + log(m) +
           logprior_penalty;
         u = runif(1,0,1)[0];
-        if(log(u)>logratio){ //Rejected proposed tree, so we roll back.
+        if(log(u)>logratio && t>=burnin){ //Rejected proposed tree, so we roll back.
           tau->growLeaf(nodeToPrune->parent);
         }
       }

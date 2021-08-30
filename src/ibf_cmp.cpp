@@ -4,7 +4,7 @@
 List ibf_comp(List z_test,
               IntegerVector z_train,
               IntegerVector renewal,
-              List prohibited,
+              LogicalMatrix allowedMatrix,
               double alpha = 1/2,
               double logprior_penalty = 2,
               unsigned int Hmax = 5,
@@ -16,7 +16,7 @@ List ibf_comp(List z_test,
   int m = alphlen;
   // Allocate maximal tree
   IntegerVector empty(0);
-  vlmcTree* tau = new vlmcTree(alphlen, Hmax, empty, prohibited);
+  vlmcTree* tau = new vlmcTree(alphlen, Hmax, empty, allowedMatrix);
   tau->assignLimits(renewal);
   tau->growLeaf(tau->root);
   tau->growLeaf(tau->root->children[renewal[0]]);

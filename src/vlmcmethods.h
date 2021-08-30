@@ -35,11 +35,11 @@ public:
   unsigned int h;
   bool vlmcLeaf = false;
   bool tested = false;
-  void growPerfect(unsigned int m, unsigned int H, IntegerVector renewal, List prohibited);
+  void growPerfect(unsigned int m, unsigned int H, IntegerVector renewal, LogicalMatrix allowedMatrix);
   string getPath();
   unsigned int getN_train();
   unsigned int getN_test();
-  void growChildren(unsigned int m, IntegerVector renewal, List prohibited);
+  void growChildren(unsigned int m, IntegerVector renewal, LogicalMatrix allowedMatrix);
   bool renewal_limit = false;
   bool is_prohibited = false;
 private:
@@ -49,7 +49,7 @@ private:
 
 class vlmcTree{
 public:
-  vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal, List prohibited);
+  vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal, LogicalMatrix allowedMatrix);
   ~vlmcTree();
   void addData_train(IntegerVector z, bool reset);
   void addData_test(IntegerVector z, bool reset);

@@ -12,16 +12,21 @@ vlmcNode::~vlmcNode(){
   }
 }
 
-void vlmcNode::growChildren(unsigned int m, IntegerVector renewal, List prohibited){
+void vlmcNode::growChildren(unsigned int m, IntegerVector renewal, 
+                            LogicalMatrix allowedMatrix){
   if(this->children.size() == 0 && !this->is_prohibited){
     vector<vlmcNode*> ch;
     unsigned int this_label = this->label;
-    IntegerVector proh;
+    LogicalVector allowedPast(m);
     if(this->parent != NULL){
-      proh = as<IntegerVector>(prohibited[this->label]); 
+      allowedPast = allowedMatrix(_,this_label); 
     } else {
-      proh = {99}; 
+      for(unsigned int i=0; i<m; i++){
+        allowedPast(i) = true;
+      }
     }
+    
+    // Create m child nodes
     for(int i=0; i<m; i++){
       bool is_renewal = false;
       for(int j=0; j<renewal.size(); j++){
@@ -30,12 +35,8 @@ void vlmcNode::growChildren(unsigned int m, IntegerVector renewal, List prohibit
         }
       }
       if(this->parent == NULL || !is_renewal){
-        bool i_prohibited = false;
-        for(int j=0; j<proh.size(); j++){
-          if(i == proh[j]){
-            i_prohibited = true;
-          }
-        }
+        bool i_prohibited = !allowedPast(i);
+        
         vlmcNode* a = new vlmcNode(i);
         a->parent = this;
         a->h = this->h + 1;
@@ -51,7 +52,8 @@ void vlmcNode::growChildren(unsigned int m, IntegerVector renewal, List prohibit
   }
 }
 
-void vlmcNode::growPerfect(unsigned int m, unsigned int H, IntegerVector renewal, List prohibited){
+void vlmcNode::growPerfect(unsigned int m, unsigned int H, IntegerVector renewal,
+                           LogicalMatrix allowedMatrix){
   // Only allowed in an empty tree.
   if(this->parent == NULL && this->children.size() == 0){
     unsigned int l;
@@ -60,7 +62,7 @@ void vlmcNode::growPerfect(unsigned int m, unsigned int H, IntegerVector renewal
       currentLeaves = this->getLeaves();
       l = currentLeaves.size();
       for(unsigned int i=0; i<l; i++){
-        currentLeaves[i]->growChildren(m, renewal, prohibited);
+        currentLeaves[i]->growChildren(m, renewal, allowedMatrix);
       }
     }
   }

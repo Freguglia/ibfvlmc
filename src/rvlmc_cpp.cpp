@@ -8,16 +8,17 @@ vlmcTree* generate_pst(List context_list,
                        unsigned int m){
   
   IntegerVector empty(0);
-  List emptyList(m);
+  LogicalVector A = Rcpp::LogicalVector(m * m, true); 
+  LogicalMatrix allAllowed = Rcpp::LogicalMatrix(m, m, A.begin());
   unsigned int Hmax = 0;
-  vlmcTree* tau = new vlmcTree(m, Hmax, empty, emptyList);
+  vlmcTree* tau = new vlmcTree(m, Hmax, empty, allAllowed);
   
   for(int s=0; s<context_list.size(); s++){
     IntegerVector path = context_list[s];
     vlmcNode* node = tau->root;
     for(int d=0; d<path.size(); d++){
       if(node->children.size() == 0){
-        node->growChildren(m, empty, emptyList);
+        node->growChildren(m, empty, allAllowed);
       }
       node = node->children[path[d]];
     }

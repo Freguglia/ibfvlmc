@@ -7,12 +7,14 @@ void vlmcTree::clear(){
   }
 }
 
-vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal, List prohibited){
+vlmcTree::vlmcTree(unsigned int alphlen, unsigned int Hmax, IntegerVector renewal, 
+                  LogicalMatrix allowedMatrix){
   root = new vlmcNode(-1);
   root->h = 0;
-  root->growPerfect(alphlen, Hmax, renewal, prohibited);
+  root->growPerfect(alphlen, Hmax, renewal, allowedMatrix);
   H = Hmax;
   m = alphlen;
+  allowedMatrix = allowedMatrix;
   n_train = 0;
   n_test = 0;
   root->vlmcLeaf = true;
