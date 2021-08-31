@@ -14,7 +14,8 @@ Imports:
   dplyr,
   Brobdingnag,
   furrr,
-  purrr
+  purrr,
+  progressr
 LinkingTo: Rcpp,
            RcppArmadillo
 RoxygenNote: 7.1.1
