@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // ibf
 List ibf(List z_test, List z_train, IntegerVector renewal, LogicalMatrix allowedMatrix, double alpha, double logprior_penalty, unsigned int Hmax, unsigned int alphlen, unsigned int burnin, unsigned int nsamples);
 RcppExport SEXP _ibfvlmc_ibf(SEXP z_testSEXP, SEXP z_trainSEXP, SEXP renewalSEXP, SEXP allowedMatrixSEXP, SEXP alphaSEXP, SEXP logprior_penaltySEXP, SEXP HmaxSEXP, SEXP alphlenSEXP, SEXP burninSEXP, SEXP nsamplesSEXP) {

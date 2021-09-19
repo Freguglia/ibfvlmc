@@ -3,7 +3,7 @@
 \docType{data}
 \name{binchain}
 \alias{binchain}
-\title{List of 4 binary chains}
+\title{Example VLMC data}
 \format{
 An object of class \code{list} of length 4.
 }
@@ -11,6 +11,9 @@ An object of class \code{list} of length 4.
 binchain
 }
 \description{
-List of 4 binary chains
+List of 4 binary chains with length 2500 each.
+}
+\author{
+Victor Freguglia
 }
 \keyword{datasets}

@@ -1,12 +1,12 @@
 Package: ibfvlmc
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
+Title: Instrinsic Bayes Factors for Renewal State Testing on VLMC Models
 Version: 0.0.9999
-Date: 2021-06-27
 Author: Victor Freguglia
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full sentences.
-License: GPL (>= 2)
+Maintainer: Victor Freguglia <victorfreguglia@gmail.com>
+Description: Provides functionalities for computing estimated of Partial Bayes Factors and Intrinsic Bayes Factors
+  to detect renewal states on Variable-Length Markov Chain models.
+License: GPL (>= 3)
 Imports:
   Rcpp (>= 1.0.6),
   tibble,
@@ -23,3 +23,4 @@ Encoding: UTF-8
 Depends: 
     R (>= 2.10)
 LazyData: TRUE
+URL: https://github.com/Freguglia/ibfvlmc

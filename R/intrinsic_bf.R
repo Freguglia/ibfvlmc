@@ -1,4 +1,3 @@
-#' @export
 #' @importFrom furrr future_map furrr_options
 #' @importFrom purrr map_dbl
 intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
@@ -39,6 +38,38 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
               partials = partials,
               total_time = total_time))}
 
+#' @title Intrinsic Bayes Factor for Renewal State Testing
+#' 
+#' @param z A `list` object containing independent VLMC sequences in each element.
+#' @param nsamples Size of context-tree chains in each internal Metropolis-Hastings algorithm run.
+#' @param burnin Number of Metropolis-Hastings algorithm steps executed before starting to record states.
+#' @param Hmax Maximum height of the context tree considered.
+#' @param allowedMatrix A logical `matrix` specifying which transitions are allowed (i.e., have positive probability). 
+#' The row `i` and column `j` indicates whether a transition from (i-1) to (j-1) is allowed. 
+#' `NULL` can be used to indicate that every transition is allowed. 
+#' @param renewal Which states are considered renewal states under the H0 hypothesis.
+#' @param alpha0,alpha1 The Dirichlet parameter to be considered in the prior distribution of probabilities, under
+#' the H0 and H1 hypothesis respectively. 
+#' @param logpenalty0,logpenalty1 Penalty considered in the context tree prior distribution for growing a new branch for the current tree. `0` represents a uniform context tree prior distribution.
+#' @param seed Random seed to be used as a reference for the Partial Bayes Factors computations. Passing this argument instead of using the `set.seed()` function is required to ensure reproducibility because of parallel computations carried in the function.
+#' @param subset_size Number of samples used in each training set. Increasing this value may drastically increases the number of combinations of sequences used as training samples, it is not recommended to use values larger than `2`.
+#' 
+#' @return A `list` object containing:
+#'   * `ibf_arithmetic`: Arithmetic Intrinsic Bayes Factor computed.
+#'   * `ibf_geometric`: Geometric Intrinsic Bayes Factor computed.
+#'   * `partials`: A list with the output of each Partial Bayes Factor computed.
+#'   * `total_time`: Total time elapsed. 
+#' 
+#' @details 
+#' 
+#' In order to fully take advantage of parallel computing in this function, the user should set a `plan` from the `future` package.
+#' 
+#' ```
+#' library(future)
+#' plan(multisession)
+#' ```
+#' 
+#' @author Victor Freguglia
 #' @export
 intrinsic_bf_cmp <- function(z, renewal,
                          nsamples = 20000, burnin = 10000,
