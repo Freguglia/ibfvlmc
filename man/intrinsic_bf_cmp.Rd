@@ -20,7 +20,7 @@ intrinsic_bf_cmp(
 )
 }
 \arguments{
-\item{z}{A `list` object containing independent VLMC sequences in each element.}
+\item{z}{A \code{list} object containing independent VLMC sequences in each element.}
 
 \item{renewal}{Which states are considered renewal states under the H0 hypothesis.}
 
@@ -30,36 +30,35 @@ intrinsic_bf_cmp(
 
 \item{Hmax}{Maximum height of the context tree considered.}
 
-\item{allowedMatrix}{A logical `matrix` specifying which transitions are allowed (i.e., have positive probability). 
-The row `i` and column `j` indicates whether a transition from (i-1) to (j-1) is allowed. 
-`NULL` can be used to indicate that every transition is allowed.}
+\item{allowedMatrix}{A logical \code{matrix} specifying which transitions are allowed (i.e., have positive probability).
+The row \code{i} and column \code{j} indicates whether a transition from (i-1) to (j-1) is allowed.
+\code{NULL} can be used to indicate that every transition is allowed.}
 
 \item{alpha0, alpha1}{The Dirichlet parameter to be considered in the prior distribution of probabilities, under
 the H0 and H1 hypothesis respectively.}
 
-\item{logpenalty0, logpenalty1}{Penalty considered in the context tree prior distribution for growing a new branch for the current tree. `0` represents a uniform context tree prior distribution.}
+\item{logpenalty0, logpenalty1}{Penalty considered in the context tree prior distribution for growing a new branch for the current tree. \code{0} represents a uniform context tree prior distribution.}
 
-\item{seed}{Random seed to be used as a reference for the Partial Bayes Factors computations. Passing this argument instead of using the `set.seed()` function is required to ensure reproducibility because of parallel computations carried in the function.}
+\item{seed}{Random seed to be used as a reference for the Partial Bayes Factors computations. Passing this argument instead of using the \code{set.seed()} function is required to ensure reproducibility because of parallel computations carried in the function.}
 
-\item{subset_size}{Number of samples used in each training set. Increasing this value may drastically increases the number of combinations of sequences used as training samples, it is not recommended to use values larger than `2`.}
+\item{subset_size}{Number of samples used in each training set. Increasing this value may drastically increases the number of combinations of sequences used as training samples, it is not recommended to use values larger than \code{2}.}
 }
 \value{
-A `list` object containing:
-  * `ibf_arithmetic`: Arithmetic Intrinsic Bayes Factor computed.
-  * `ibf_geometric`: Geometric Intrinsic Bayes Factor computed.
-  * `partials`: A list with the output of each Partial Bayes Factor computed.
-  * `total_time`: Total time elapsed.
+A \code{list} object containing:
+\itemize{
+\item \code{ibf_arithmetic}: Arithmetic Intrinsic Bayes Factor computed.
+\item \code{ibf_geometric}: Geometric Intrinsic Bayes Factor computed.
+\item \code{partials}: A list with the output of each Partial Bayes Factor computed.
+\item \code{total_time}: Total time elapsed.
+}
 }
 \description{
 Intrinsic Bayes Factor for Renewal State Testing
 }
 \details{
-In order to fully take advantage of parallel computing in this function, the user should set a `plan` from the `future` package.
-
-```
-library(future)
+In order to fully take advantage of parallel computing in this function, the user should set a \code{plan} from the \code{future} package.\preformatted{library(future)
 plan(multisession)
-```
+}
 }
 \author{
 Victor Freguglia
