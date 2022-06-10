@@ -14,7 +14,7 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
   if(is.null(logpenalty0)) logpenalty0 <- m - length(renewal0)
   if(is.null(logpenalty1)) logpenalty1 <- m - length(renewal1)
   
-  cbn <- combn(1:I, subset_size)
+  cbn <- combn(1:I, (I-subset_size))
   cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
   progressr::with_progress({
     p <- progressr::progressor(steps = length(cbn))
@@ -85,7 +85,7 @@ intrinsic_bf_cmp <- function(z, renewal,
   if(is.null(logpenalty0)) logpenalty0 <- m - length(renewal)
   if(is.null(logpenalty1)) logpenalty1 <- m
   
-  cbn <- combn(1:I, subset_size)
+  cbn <- combn(1:I, (I-subset_size))
   cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
   progressr::with_progress({
     p <- progressr::progressor(steps = length(cbn))

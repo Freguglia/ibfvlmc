@@ -56,9 +56,11 @@ A \code{list} object containing:
 Intrinsic Bayes Factor for Renewal State Testing
 }
 \details{
-In order to fully take advantage of parallel computing in this function, the user should set a \code{plan} from the \code{future} package.\preformatted{library(future)
+In order to fully take advantage of parallel computing in this function, the user should set a \code{plan} from the \code{future} package.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{library(future)
 plan(multisession)
-}
+}\if{html}{\out{</div>}}
 }
 \author{
 Victor Freguglia
