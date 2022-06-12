@@ -14,7 +14,7 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
   if(is.null(logpenalty0)) logpenalty0 <- m - length(renewal0)
   if(is.null(logpenalty1)) logpenalty1 <- m - length(renewal1)
   
-  cbn <- combn(1:I, subset_size)
+  cbn <- combn(1:I, (I-subset_size))
   cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
   progressr::with_progress({
     p <- progressr::progressor(steps = length(cbn))
@@ -53,7 +53,8 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
 #' @param logpenalty0,logpenalty1 Penalty considered in the context tree prior distribution for growing a new branch for the current tree. `0` represents a uniform context tree prior distribution.
 #' @param seed Random seed to be used as a reference for the Partial Bayes Factors computations. Passing this argument instead of using the `set.seed()` function is required to ensure reproducibility because of parallel computations carried in the function.
 #' @param subset_size Number of samples used in each training set. Increasing this value may drastically increases the number of combinations of sequences used as training samples, it is not recommended to use values larger than `2`.
-#' 
+#' @param max_subsets_evaluated Maximum number of Partial Bayes Factors to compute when the number of combinations of the chosen subset size is too large. The selected subsets are selected at random.
+#'
 #' @return A `list` object containing:
 #'   * `ibf_arithmetic`: Arithmetic Intrinsic Bayes Factor computed.
 #'   * `ibf_geometric`: Geometric Intrinsic Bayes Factor computed.
@@ -77,7 +78,8 @@ intrinsic_bf_cmp <- function(z, renewal,
                          allowedMatrix = NULL,
                          alpha0 = 1/2, alpha1 = 1/2,
                          logpenalty0 = 0, logpenalty1 = 0,
-                         seed = NULL, subset_size = 2){
+                         seed = NULL, subset_size = 2,
+                         max_subsets_evaluated = NULL){
   init_time <- Sys.time()
   I <- length(z)
   m <- length(unique(z[[1]]))
@@ -85,18 +87,31 @@ intrinsic_bf_cmp <- function(z, renewal,
   if(is.null(logpenalty0)) logpenalty0 <- m - length(renewal)
   if(is.null(logpenalty1)) logpenalty1 <- m
   
-  cbn <- combn(1:I, subset_size)
-  cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
+  subset_number <- choose(I, subset_size)
+  if(subset_number > 10000 && is.null(max_subsets_evaluated)){
+    stop("Too many combinations and no max_subsets_evaluated set.")
+  } else if(subset_number > 10000){
+    cbn <- lapply(seq_len(max_subsets_evaluated),
+                  function(x) sample(seq_len(I), size = min(I,subset_size)))
+  } else {
+    cbn <- combn(1:I, (subset_size))
+    cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
+    if(!is.null(max_subsets_evaluated)){
+      cbn <- cbn[sample(seq_along(cbn), size = min(length(cbn), max_subsets_evaluated))]
+    }
+  }
   progressr::with_progress({
     p <- progressr::progressor(steps = length(cbn))
     partials <- future_map(1:length(cbn), function(i) {
-      p()
       set.seed(seed + i)
-      partial_bf_cmp(ztest = z[-cbn[[i]]], ztrain = z[cbn[[i]]],
-                     nsamples = nsamples, burnin = burnin,
-                     Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
-                     logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
-                     renewal = renewal, allowedMatrix = allowedMatrix)
+      out <-
+        partial_bf_cmp(ztest = z[-cbn[[i]]], ztrain = z[cbn[[i]]],
+                       nsamples = nsamples, burnin = burnin,
+                       Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
+                       logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
+                       renewal = renewal, allowedMatrix = allowedMatrix)
+      p()
+      return(out)
     }, .options = furrr_options(seed = NULL))})
   pbfs <- map_dbl(partials, "pbf")
   ibf_arithmetic <- mean(pbfs)
@@ -104,5 +119,4 @@ intrinsic_bf_cmp <- function(z, renewal,
   total_time <- Sys.time() - init_time
   return(list(ibf_arithmetic = ibf_arithmetic,
               ibf_geometric = ibf_geometric,
-              partials = partials,
-              total_time = total_time))}
+              partials = partials))}

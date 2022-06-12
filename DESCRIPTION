@@ -19,7 +19,7 @@ Imports:
 LinkingTo: Rcpp,
            RcppArmadillo
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Encoding: UTF-8
 Depends: 
     R (>= 2.10)
