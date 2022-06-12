@@ -53,7 +53,8 @@ intrinsic_bf <- function(z, renewal0, renewal1 = numeric(),
 #' @param logpenalty0,logpenalty1 Penalty considered in the context tree prior distribution for growing a new branch for the current tree. `0` represents a uniform context tree prior distribution.
 #' @param seed Random seed to be used as a reference for the Partial Bayes Factors computations. Passing this argument instead of using the `set.seed()` function is required to ensure reproducibility because of parallel computations carried in the function.
 #' @param subset_size Number of samples used in each training set. Increasing this value may drastically increases the number of combinations of sequences used as training samples, it is not recommended to use values larger than `2`.
-#' 
+#' @param max_subsets_evaluated Maximum number of Partial Bayes Factors to compute when the number of combinations of the chosen subset size is too large. The selected subsets are selected at random.
+#'
 #' @return A `list` object containing:
 #'   * `ibf_arithmetic`: Arithmetic Intrinsic Bayes Factor computed.
 #'   * `ibf_geometric`: Geometric Intrinsic Bayes Factor computed.
@@ -93,7 +94,7 @@ intrinsic_bf_cmp <- function(z, renewal,
     cbn <- lapply(seq_len(max_subsets_evaluated),
                   function(x) sample(seq_len(I), size = min(I,subset_size)))
   } else {
-    cbn <- combn(1:I, (I-subset_size))
+    cbn <- combn(1:I, (subset_size))
     cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
     if(!is.null(max_subsets_evaluated)){
       cbn <- cbn[sample(seq_along(cbn), size = min(length(cbn), max_subsets_evaluated))]
@@ -103,7 +104,7 @@ intrinsic_bf_cmp <- function(z, renewal,
     p <- progressr::progressor(steps = length(cbn))
     partials <- future_map(1:length(cbn), function(i) {
       set.seed(seed + i)
-      out <- 
+      out <-
         partial_bf_cmp(ztest = z[-cbn[[i]]], ztrain = z[cbn[[i]]],
                        nsamples = nsamples, burnin = burnin,
                        Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
