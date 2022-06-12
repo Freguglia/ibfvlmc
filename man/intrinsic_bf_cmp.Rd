@@ -16,7 +16,8 @@ intrinsic_bf_cmp(
   logpenalty0 = 0,
   logpenalty1 = 0,
   seed = NULL,
-  subset_size = 2
+  subset_size = 2,
+  max_subsets_evaluated = NULL
 )
 }
 \arguments{
