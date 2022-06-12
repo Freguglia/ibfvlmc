@@ -77,7 +77,8 @@ intrinsic_bf_cmp <- function(z, renewal,
                          allowedMatrix = NULL,
                          alpha0 = 1/2, alpha1 = 1/2,
                          logpenalty0 = 0, logpenalty1 = 0,
-                         seed = NULL, subset_size = 2){
+                         seed = NULL, subset_size = 2,
+                         max_subsets_evaluated = NULL){
   init_time <- Sys.time()
   I <- length(z)
   m <- length(unique(z[[1]]))
@@ -85,18 +86,31 @@ intrinsic_bf_cmp <- function(z, renewal,
   if(is.null(logpenalty0)) logpenalty0 <- m - length(renewal)
   if(is.null(logpenalty1)) logpenalty1 <- m
   
-  cbn <- combn(1:I, (I-subset_size))
-  cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
+  subset_number <- choose(I, subset_size)
+  if(subset_number > 10000 && is.null(max_subsets_evaluated)){
+    stop("Too many combinations and no max_subsets_evaluated set.")
+  } else if(subset_number > 10000){
+    cbn <- lapply(seq_len(max_subsets_evaluated),
+                  function(x) sample(seq_len(I), size = min(I,subset_size)))
+  } else {
+    cbn <- combn(1:I, (I-subset_size))
+    cbn <- unname(split(cbn, rep(1:ncol(cbn), each = nrow(cbn))))
+    if(!is.null(max_subsets_evaluated)){
+      cbn <- cbn[sample(seq_along(cbn), size = min(length(cbn), max_subsets_evaluated))]
+    }
+  }
   progressr::with_progress({
     p <- progressr::progressor(steps = length(cbn))
     partials <- future_map(1:length(cbn), function(i) {
-      p()
       set.seed(seed + i)
-      partial_bf_cmp(ztest = z[-cbn[[i]]], ztrain = z[cbn[[i]]],
-                     nsamples = nsamples, burnin = burnin,
-                     Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
-                     logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
-                     renewal = renewal, allowedMatrix = allowedMatrix)
+      out <- 
+        partial_bf_cmp(ztest = z[-cbn[[i]]], ztrain = z[cbn[[i]]],
+                       nsamples = nsamples, burnin = burnin,
+                       Hmax = Hmax, alpha0 = alpha0, alpha1 = alpha1,
+                       logpenalty0 = logpenalty0, logpenalty1 = logpenalty1,
+                       renewal = renewal, allowedMatrix = allowedMatrix)
+      p()
+      return(out)
     }, .options = furrr_options(seed = NULL))})
   pbfs <- map_dbl(partials, "pbf")
   ibf_arithmetic <- mean(pbfs)
@@ -104,5 +118,4 @@ intrinsic_bf_cmp <- function(z, renewal,
   total_time <- Sys.time() - init_time
   return(list(ibf_arithmetic = ibf_arithmetic,
               ibf_geometric = ibf_geometric,
-              partials = partials,
-              total_time = total_time))}
+              partials = partials))}
