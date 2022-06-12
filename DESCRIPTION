@@ -1,7 +1,7 @@
 Package: ibfvlmc
 Type: Package
 Title: Instrinsic Bayes Factors for Renewal State Testing on VLMC Models
-Version: 0.0.9999
+Version: 0.1.9999
 Author: Victor Freguglia
 Maintainer: Victor Freguglia <victorfreguglia@gmail.com>
 Description: Provides functionalities for computing estimated of Partial Bayes Factors and Intrinsic Bayes Factors

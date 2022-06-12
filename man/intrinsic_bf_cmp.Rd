@@ -43,6 +43,8 @@ the H0 and H1 hypothesis respectively.}
 \item{seed}{Random seed to be used as a reference for the Partial Bayes Factors computations. Passing this argument instead of using the \code{set.seed()} function is required to ensure reproducibility because of parallel computations carried in the function.}
 
 \item{subset_size}{Number of samples used in each training set. Increasing this value may drastically increases the number of combinations of sequences used as training samples, it is not recommended to use values larger than \code{2}.}
+
+\item{max_subsets_evaluated}{Maximum number of Partial Bayes Factors to compute when the number of combinations of the chosen subset size is too large. The selected subsets are selected at random.}
 }
 \value{
 A \code{list} object containing:
